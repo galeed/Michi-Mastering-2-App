@@ -2,51 +2,405 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Michi Mastering App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Fuentes Orbitron y Rajdhani -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   
-  <!-- 1. AQUÍ VAN LOS ESTILOS (CSS) -->
   <style>
-    /* Estilos Cyberpunk / Glassmorphic */
-    /* ... */
+    :root {
+      --bg-dark: #08090c;
+      --card-bg: rgba(15, 17, 26, 0.75);
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff0055;
+      --text-color: #e2e8f0;
+      --border-color: rgba(0, 243, 255, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(ff, 0, 85, 0.05) 0%, transparent 40%);
+      color: var(--text-color);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 15px;
+    }
+
+    /* Encabezado y Marca */
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
+      letter-spacing: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .header p {
+      font-size: 1rem;
+      color: #94a3b8;
+      margin-top: 5px;
+      letter-spacing: 1px;
+    }
+
+    /* Zona de Carga (Dropzone) */
+    .upload-box {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card-bg);
+      border: 2px dashed var(--neon-cyan);
+      border-radius: 16px;
+      padding: 35px 20px;
+      text-align: center;
+      cursor: pointer;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.05);
+      transition: all 0.3s ease;
+      margin-bottom: 35px;
+    }
+
+    .upload-box:hover {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 25px rgba(255, 0, 85, 0.3), inset 0 0 20px rgba(255, 0, 85, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      color: var(--neon-cyan);
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .upload-subtext {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    /* Grilla de Presets */
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--neon-cyan);
+      margin-bottom: 15px;
+      width: 100%;
+      max-width: 800px;
+      text-align: left;
+    }
+
+    .preset-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+    }
+
+    .preset-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .preset-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: transparent;
+      transition: background 0.3s;
+    }
+
+    .preset-card:hover {
+      border-color: rgba(0, 243, 255, 0.6);
+      transform: translateY(-3px);
+    }
+
+    .preset-card.active {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 20px rgba(255, 0, 85, 0.35);
+    }
+
+    .preset-card.active::before {
+      background: var(--neon-pink);
+    }
+
+    .preset-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .preset-card p {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      line-height: 1.3;
+    }
+
+    /* Reproductor Status */
+    .status-bar {
+      margin-top: 25px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      color: var(--neon-cyan);
+      height: 20px;
+    }
   </style>
 </head>
 <body>
 
-  <h1>MICHI MASTERING</h1>
-
-  <!-- 2. AQUÍ VA LA ESTRUCTURA VISUAL (HTML) -->
-  <div class="upload-zone" id="dropzone">
-    <p>Arrastra tu archivo WAV/MP3 aquí o haz clic para cargar</p>
-    <input type="file" id="audioInput" accept="audio/*" style="display:none;">
+  <!-- Encabezado -->
+  <div class="header">
+    <h1>🐾 MICHI MASTERING</h1>
+    <p>Processing Engine - Web Audio API</p>
   </div>
 
-  <div class="preset-grid" id="presetGrid">
+  <!-- Zona de Arrastre y Selección de Archivo -->
+  <div class="upload-box" id="dropzone">
+    <div class="upload-icon">🎵</div>
+    <div class="upload-text" id="fileName">Sueltar archivo WAV / MP3 aquí</div>
+    <div class="upload-subtext">Haz clic para buscar en tu dispositivo</div>
+    <input type="file" id="audioInput" accept="audio/*" style="display: none;">
+  </div>
+
+  <!-- Selector de Estilos de Mastering -->
+  <div class="section-title">ESTILO DE MASTERIZACIÓN</div>
+  <div class="preset-container">
+    
     <div class="preset-card active" data-preset="pop">
       <h3>Pulido Pop</h3>
-      <p>Realce en agudos de presencia y control de dinámicas en graves.</p>
+      <p>Bajos contundentes y claridad acentuada en el rango medio.</p>
     </div>
+
     <div class="preset-card" data-preset="edm">
       <h3>Festival EDM</h3>
-      <p>Graves profundos y compensación de sub-bass con gran volumen.</p>
+      <p>Amplitud estérica optimizada y graves profundos para gran impacto.</p>
     </div>
-    <div class="preset-card" data-preset="vintage">
-      <h3>Cinta Vintage</h3>
-      <p>Saturación armónica suave con recortes cálidos de frecuencias altas.</p>
-    </div>
+
     <div class="preset-card" data-preset="warm">
       <h3>Analógico Cálido</h3>
-      <p>Cuerpo denso en frecuencias medias con ecualización de tipo valvular.</p>
+      <p>Bajos enérgicos combinados con agudos potenciados y saturación suave.</p>
     </div>
+
   </div>
 
-  <!-- 3. AQUÍ COLOCAS EL CÓDIGO JAVASCRIPT -->
+  <div class="status-bar" id="statusText">Esperando archivo de audio...</div>
+
   <script>
-    // Coloca aquí todo el código del Web Audio API que te acabo de proporcionar
+    // --- MOTOR DE AUDIO (WEB AUDIO API) ---
     let audioCtx;
     let audioBuffer = null;
-    // ...
-  </script>
+    let currentSource = null;
 
+    // Nodos del Rack
+    let lowShelf, midEq, highShelf, saturator, limiter;
+    let activePreset = 'pop';
+
+    // Ajustes Tonalidades basados en los 3 Presets seleccionados
+    const PRESETS = {
+      pop: {
+        lowGain: 3.5,     // Bajos contundentes
+        midGain: 2.0,     // Claridad en medios
+        highGain: 2.5,    // Agudos de presencia
+        drive: 0.1,       // Saturación mínima
+        thresh: -1.0
+      },
+      edm: {
+        lowGain: 5.5,     // Sub-bass y graves masivos
+        midGain: -1.5,    // Espacio en medios
+        highGain: 4.0,    // Brillantez de festival
+        drive: 0.2,       // Punch dinámico
+        thresh: -0.5
+      },
+      warm: {
+        lowGain: 4.0,     // Bajos enérgicos
+        midGain: 1.0,     // Calidez
+        highGain: 3.5,    // Agudos potenciados
+        drive: 0.45,      // Saturación analógica de tubo
+        thresh: -1.5
+      }
+    };
+
+    function initAudio() {
+      if (audioCtx) return;
+
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AudioContext();
+
+      // Ecualizador de 3 Bandas
+      lowShelf = audioCtx.createBiquadFilter();
+      lowShelf.type = 'lowshelf';
+      lowShelf.frequency.value = 100;
+
+      midEq = audioCtx.createBiquadFilter();
+      midEq.type = 'peaking';
+      midEq.frequency.value = 1200;
+      midEq.Q.value = 1.0;
+
+      highShelf = audioCtx.createBiquadFilter();
+      highShelf.type = 'highshelf';
+      highShelf.frequency.value = 8000;
+
+      // Saturador
+      saturator = audioCtx.createWaveShaper();
+      saturator.oversample = '4x';
+
+      // Limitador / Peak Control
+      limiter = audioCtx.createDynamicsCompressor();
+      limiter.threshold.value = -1.0;
+      limiter.knee.value = 0.0;
+      limiter.ratio.value = 20.0;
+      limiter.attack.value = 0.003;
+      limiter.release.value = 0.1;
+
+      // Conexión en Serie
+      lowShelf.connect(midEq);
+      midEq.connect(highShelf);
+      highShelf.connect(saturator);
+      saturator.connect(limiter);
+      limiter.connect(audioCtx.destination);
+    }
+
+    function setDistortion(amount) {
+      if (amount === 0) {
+        saturator.curve = null;
+        return;
+      }
+      const k = amount * 50;
+      const n_samples = 44100;
+      const curve = new Float32Array(n_samples);
+      const deg = Math.PI / 180;
+
+      for (let i = 0; i < n_samples; ++i) {
+        let x = (i * 2) / n_samples - 1;
+        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
+      }
+      saturator.curve = curve;
+    }
+
+    function applyPreset(presetKey) {
+      activePreset = presetKey;
+      const cfg = PRESETS[presetKey];
+      if (!cfg || !audioCtx) return;
+
+      const now = audioCtx.currentTime;
+      lowShelf.gain.setTargetAtTime(cfg.lowGain, now, 0.05);
+      midEq.gain.setTargetAtTime(cfg.midGain, now, 0.05);
+      highShelf.gain.setTargetAtTime(cfg.highGain, now, 0.05);
+      limiter.threshold.setTargetAtTime(cfg.thresh, now, 0.05);
+      setDistortion(cfg.drive);
+    }
+
+    // --- INTERACCIÓN Y EVENTOS ---
+    const dropzone = document.getElementById('dropzone');
+    const audioInput = document.getElementById('audioInput');
+    const fileNameDisplay = document.getElementById('fileName');
+    const statusText = document.getElementById('statusText');
+    const cards = document.querySelectorAll('.preset-card');
+
+    dropzone.addEventListener('click', () => audioInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = '#ff0055';
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.style.borderColor = '#00f3ff';
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.style.borderColor = '#00f3ff';
+      if (e.dataTransfer.files.length) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    audioInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      initAudio();
+      fileNameDisplay.textContent = file.name;
+      statusText.textContent = "Cargando y procesando audio...";
+
+      const reader = new FileReader();
+      reader.onload = async (evt) => {
+        try {
+          audioBuffer = await audioCtx.decodeAudioData(evt.target.result);
+          statusText.textContent = "Reproduciendo con Preset: " + activePreset.toUpperCase();
+          startPlayback();
+        } catch (err) {
+          statusText.textContent = "Error al procesar el archivo de audio.";
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function startPlayback() {
+      if (!audioBuffer) return;
+      if (currentSource) currentSource.stop();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      currentSource = audioCtx.createBufferSource();
+      currentSource.buffer = audioBuffer;
+      currentSource.connect(lowShelf);
+      
+      applyPreset(activePreset);
+      currentSource.start(0);
+    }
+
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        const selected = card.getAttribute('data-preset');
+        applyPreset(selected);
+        if (audioBuffer) {
+          statusText.textContent = "Preset activo: " + selected.toUpperCase();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
