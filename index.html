@@ -3,245 +3,134 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cargador de Audio Robusto - Web Audio API</title>
+  <title>Michi Mastering App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color: #08090c;
+      --card-bg: rgba(18, 22, 32, 0.65);
+      --neon-cyan: #00f3ff;
+      --neon-magenta: #ff0055;
+      --text-main: #e0e6ed;
+      --border-glass: rgba(0, 243, 255, 0.2);
+    }
+
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #121212;
-      color: #e0e0e0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Rajdhani', sans-serif;
       margin: 0;
-    }
-
-    .container {
-      background: #1e1e1e;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-    }
-
-    .file-input-wrapper {
-      margin-bottom: 1.5rem;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .btn {
-      background: #00e676;
-      color: #121212;
-      border: none;
-      padding: 0.8rem 1.5rem;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.2s ease, transform 0.1s ease;
-    }
-
-    .btn:hover {
-      background: #00c853;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    .btn:disabled {
-      background: #424242;
-      color: #9e9e9e;
-      cursor: not-allowed;
-    }
-
-    .status {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: #b0bec5;
-      min-height: 1.5em;
-      word-break: break-word;
-    }
-
-    .status.error {
-      color: #ff5252;
-    }
-
-    .controls {
+      padding: 20px;
       display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 1.5rem;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+      margin-bottom: 20px;
+    }
+
+    /* Contenedor del Uploader */
+    .upload-zone {
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      border: 2px dashed var(--neon-cyan);
+      border-radius: 12px;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      margin-bottom: 30px;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
+    }
+
+    /* Grilla de Estilos de Mastering */
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .preset-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-glass);
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+    }
+
+    .preset-card:hover, .preset-card.active {
+      border-color: var(--neon-magenta);
+      box-shadow: 0 0 15px rgba(ff, 0, 85, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .preset-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      margin: 0 0 8px 0;
+      color: var(--neon-cyan);
+      font-size: 1rem;
+    }
+
+    .preset-card p {
+      font-size: 0.85rem;
+      margin: 0;
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Cargador de Audio</h2>
-    
-    <div class="file-input-wrapper">
-      <button class="btn" id="selectBtn">Seleccionar Archivo</button>
-      <input type="file" id="audioInput" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a">
-    </div>
+  <h1>MICHI MASTERING</h1>
 
-    <div class="controls">
-      <button class="btn" id="playBtn" disabled>Reproducir</button>
-      <button class="btn" id="stopBtn" disabled>Detener</button>
-    </div>
+  <!-- Dropzone para archivos -->
+  <div class="upload-zone" id="dropzone">
+    <p>Arrastra tu archivo WAV/MP3 aquí o haz clic para cargar</p>
+    <input type="file" id="audioInput" accept="audio/*" style="display:none;">
+  </div>
 
-    <div class="status" id="statusText">Esperando archivo...</div>
+  <!-- Panel de Presets de Mastering -->
+  <div class="preset-grid" id="presetGrid">
+    <div class="preset-card active" data-preset="pop">
+      <h3>Pulido Pop</h3>
+      <p>Realce en agudos de presencia y control de dinámicas en graves.</p>
+    </div>
+    <div class="preset-card" data-preset="edm">
+      <h3>Festival EDM</h3>
+      <p>Graves profundos y compensación de sub-bass con gran volumen.</p>
+    </div>
+    <div class="preset-card" data-preset="vintage">
+      <h3>Cinta Vintage</h3>
+      <p>Saturación armónica suave con recortes cálidos de frecuencias altas.</p>
+    </div>
+    <div class="preset-card" data-preset="warm">
+      <h3>Analógico Cálido</h3>
+      <p>Cuerpo denso en frecuencias medias con ecualización de tipo valvular.</p>
+    </div>
   </div>
 
   <script>
-    // 1. Inicialización perezosa del AudioContext
-    let audioCtx = null;
-    let currentSourceNode = null;
-    let loadedAudioBuffer = null;
-
-    // Elementos del DOM
+    const dropzone = document.getElementById('dropzone');
     const audioInput = document.getElementById('audioInput');
-    const selectBtn = document.getElementById('selectBtn');
-    const playBtn = document.getElementById('playBtn');
-    const stopBtn = document.getElementById('stopBtn');
-    const statusText = document.getElementById('statusText');
+    const cards = document.querySelectorAll('.preset-card');
 
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-      }
-      return audioCtx;
-    }
+    dropzone.addEventListener('click', () => audioInput.click());
 
-    // Modalidad de selección mediante botón genérico
-    selectBtn.addEventListener('click', () => audioInput.click());
-
-    // 2. Manejo de selección de archivo
-    audioInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      setStatus(`Cargando: ${file.name}...`);
-      disableControls();
-
-      try {
-        const ctx = getAudioContext();
-
-        // 3. Reanudar contexto si el navegador lo suspendió
-        if (ctx.state === 'suspended') {
-          await ctx.resume();
-        }
-
-        // 4. Lectura de archivo mediante FileReader promisificado
-        const arrayBuffer = await readFileAsArrayBuffer(file);
-
-        // 5. Decodificación segura y compatible
-        // Usamos .slice(0) para prevenir el desprendimiento (detached ArrayBuffer)
-        loadedAudioBuffer = await decodeAudioDataSafely(ctx, arrayBuffer.slice(0));
-
-        setStatus(`Listo: ${file.name} (${loadedAudioBuffer.duration.toFixed(1)}s)`);
-        playBtn.disabled = false;
-
-      } catch (err) {
-        console.error("Error procesando audio:", err);
-        setStatus(`Error: ${err.message || "No se pudo procesar el archivo"}`, true);
-        loadedAudioBuffer = null;
-      } finally {
-        // 6. Resetear el valor del input para permitir recargar el mismo archivo consecutivamente
-        audioInput.value = '';
-      }
-    });
-
-    // 7. Reproducción de Audio
-    playBtn.addEventListener('click', async () => {
-      if (!loadedAudioBuffer) return;
-
-      const ctx = getAudioContext();
-
-      if (ctx.state === 'suspended') {
-        await ctx.resume();
-      }
-
-      // Detener cualquier reproducción previa
-      stopCurrentAudio();
-
-      // Crear nuevo nodo fuente (los BufferSourceNodes son de único uso)
-      currentSourceNode = ctx.createBufferSource();
-      currentSourceNode.buffer = loadedAudioBuffer;
-      currentSourceNode.connect(ctx.destination);
-
-      currentSourceNode.onended = () => {
-        playBtn.disabled = false;
-        stopBtn.disabled = true;
-      };
-
-      currentSourceNode.start(0);
-      playBtn.disabled = true;
-      stopBtn.disabled = false;
-      setStatus("Reproduciendo...");
-    });
-
-    // 8. Detener reproducción
-    stopBtn.addEventListener('click', () => {
-      stopCurrentAudio();
-      setStatus("Reproducción detenida.");
-    });
-
-    function stopCurrentAudio() {
-      if (currentSourceNode) {
-        try {
-          currentSourceNode.stop();
-          currentSourceNode.disconnect();
-        } catch (e) {
-          // Ya estaba detenido
-        }
-        currentSourceNode = null;
-      }
-      playBtn.disabled = !loadedAudioBuffer;
-      stopBtn.disabled = true;
-    }
-
-    // --- FUNCIONES AUXILIARES ROBUSTAS ---
-
-    function readFileAsArrayBuffer(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = () => reject(new Error("Error de lectura del archivo local."));
-        reader.readAsArrayBuffer(file);
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        const selectedPreset = card.getAttribute('data-preset');
+        console.log("Preset seleccionado:", selectedPreset);
       });
-    }
-
-    function decodeAudioDataSafely(ctx, arrayBuffer) {
-      return new Promise((resolve, reject) => {
-        // Fallback dual: Promesas + Callbacks (cubre Safari legacy y browsers modernos)
-        const res = ctx.decodeAudioData(
-          arrayBuffer,
-          (buffer) => resolve(buffer),
-          (err) => reject(new Error("Formato de audio no soportado o archivo corrupto."))
-        );
-
-        if (res && typeof res.then === 'function') {
-          res.then(resolve).catch((err) => reject(new Error("Error al decodificar audio.")));
-        }
-      });
-    }
-
-    function setStatus(message, isError = false) {
-      statusText.textContent = message;
-      statusText.classList.toggle('error', isError);
-    }
-
-    function disableControls() {
-      playBtn.disabled = true;
-      stopBtn.disabled = true;
-    }
+    });
   </script>
 </body>
 </html>
