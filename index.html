@@ -3,649 +3,245 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Michi Mastering App — AI Filters Edition</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Cargador de Audio Robusto - Web Audio API</title>
   <style>
-    :root {
-      --bg-dark: #0a0b10;
-      --panel-bg: rgba(16, 18, 27, 0.65);
-      --panel-border: rgba(0, 242, 254, 0.15);
-      --accent-cyan: #00f2fe;
-      --accent-magenta: #4facfe;
-      --accent-neon: #00ffcc;
-      --text-main: #e2e8f0;
-      --text-muted: #94a3b8;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
     body {
-      background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(79, 172, 254, 0.05) 0%, transparent 40%);
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #121212;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin: 0;
     }
 
-    header {
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 25px;
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      backdrop-filter: blur(12px);
+    .container {
+      background: #1e1e1e;
+      padding: 2rem;
       border-radius: 12px;
-      margin-bottom: 25px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-icon {
-      font-size: 28px;
-    }
-
-    .brand-title {
-      font-family: 'Orbitron', sans-serif;
-      font-weight: 800;
-      font-size: 20px;
-      letter-spacing: 1.5px;
-      color: #fff;
-      text-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
-    }
-
-    .brand-sub {
-      font-size: 12px;
-      color: var(--accent-cyan);
-      letter-spacing: 1px;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.05);
-      padding: 6px 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background-color: var(--accent-neon);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-neon);
-    }
-
-    main {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
       width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: column;
-      gap: 25px;
-    }
-
-    .section-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      letter-spacing: 1px;
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--accent-cyan);
-    }
-
-    /* Contenedor de Cargar Archivos */
-    .upload-panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      backdrop-filter: blur(12px);
-      border-radius: 12px;
-      padding: 25px;
-    }
-
-    .audio-upload {
-      border: 2px dashed rgba(0, 242, 254, 0.3);
-      padding: 35px 20px;
+      max-width: 420px;
       text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      background: rgba(0, 0, 0, 0.2);
     }
 
-    .audio-upload:hover, .audio-upload.dragover {
-      border-color: var(--accent-cyan);
-      background: rgba(0, 242, 254, 0.05);
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+    .file-input-wrapper {
+      margin-bottom: 1.5rem;
     }
 
-    .upload-icon {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .upload-text {
-      font-size: 15px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 5px;
-    }
-
-    .upload-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    #audio-input {
+    input[type="file"] {
       display: none;
     }
 
-    .controls-row {
-      margin-top: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .action-btn {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #000;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+    .btn {
+      background: #00e676;
+      color: #121212;
       border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .action-btn:hover {
-      opacity: 0.9;
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-    }
-
-    .output-info {
-      font-size: 13px;
-      color: var(--accent-neon);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    /* Grid de Filtros de Mastering */
-    .preset-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .preset-card {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      backdrop-filter: blur(12px);
-      border-radius: 12px;
-      padding: 20px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .preset-card:hover {
-      border-color: rgba(0, 242, 254, 0.4);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    }
-
-    .preset-card.active {
-      border-color: var(--accent-cyan);
-      background: rgba(0, 242, 254, 0.08);
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.25), inset 0 0 10px rgba(0, 242, 254, 0.1);
-    }
-
-    .check-icon {
-      display: none;
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      color: var(--accent-cyan);
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
       font-weight: bold;
-      font-size: 14px;
-    }
-
-    .preset-card.active .check-icon {
-      display: block;
-    }
-
-    .card-icon {
-      font-size: 26px;
-      margin-bottom: 10px;
-    }
-
-    .preset-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-
-    .preset-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.4;
-      margin-bottom: 15px;
-      min-height: 36px;
-    }
-
-    .genre-tags {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 15px;
-    }
-
-    .genre-tags span {
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      padding: 3px 8px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--accent-cyan);
-      border: 1px solid rgba(0, 242, 254, 0.2);
-    }
-
-    .spec-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      font-size: 11px;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 10px;
       border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.03);
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
     }
 
-    .spec-grid div {
+    .btn:hover {
+      background: #00c853;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #424242;
+      color: #9e9e9e;
+      cursor: not-allowed;
+    }
+
+    .status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #b0bec5;
+      min-height: 1.5em;
+      word-break: break-word;
+    }
+
+    .status.error {
+      color: #ff5252;
+    }
+
+    .controls {
       display: flex;
-      flex-direction: column;
-    }
-
-    .spec-grid span:first-child {
-      color: var(--text-muted);
-    }
-
-    .spec-grid span:last-child {
-      color: #fff;
-      font-weight: 600;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 1.5rem;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <span class="brand-icon">🐱</span>
-      <div>
-        <div class="brand-title">Michi Mastering</div>
-        <div class="brand-sub">// AI Filter Rebuild //</div>
-      </div>
-    </div>
-    <div class="status-badge">
-      <div class="status-dot"></div>
-      <span>MOTOR DSP READY</span>
-    </div>
-  </header>
-
-  <main>
-    <!-- 1. Cuadro de Cargar Archivos (PRIMERO) -->
-    <div class="upload-panel">
-      <div class="section-title">🎵 1. Cargar Pista de Audio</div>
-      
-      <div class="audio-upload" id="drop-zone">
-        <div class="upload-icon">📁</div>
-        <div class="upload-text" id="file-name-display">Haz clic o arrastra tu archivo aquí</div>
-        <div class="upload-sub">Soporta WAV, MP3, FLAC y AAC</div>
-        <input type="file" id="audio-input" accept="audio/*">
-      </div>
-
-      <div class="controls-row">
-        <button class="action-btn" id="play-btn">▶ REPRODUCIR / PAUSAR</button>
-        <div class="output-info" id="status-text">Sin audio cargado • Preset: Pulido Pop</div>
-      </div>
+  <div class="container">
+    <h2>Cargador de Audio</h2>
+    
+    <div class="file-input-wrapper">
+      <button class="btn" id="selectBtn">Seleccionar Archivo</button>
+      <input type="file" id="audioInput" accept="audio/*,.wav,.mp3,.ogg,.flac,.m4a">
     </div>
 
-    <!-- 2. Filtros de Mastering (SEGUNDO) -->
-    <div>
-      <div class="section-title">🎧 2. Seleccionar Estilo de Masterización AI</div>
-      
-      <div class="preset-grid">
-        
-        <div class="preset-card active" data-preset="pulido-pop">
-          <span class="check-icon">✓</span>
-          <div class="card-icon">✨</div>
-          <div class="preset-title">Pulido Pop</div>
-          <div class="preset-desc">Bajos contundentes y claridad cristalina en el rango medio. Sonido comercial brillante.</div>
-          <div class="genre-tags"><span>Pop</span><span>Reggaetón</span><span>Trap</span></div>
-          <div class="spec-grid">
-            <div><span>Compresor</span><span>4:1 • -14 dB</span></div>
-            <div><span>Ceiling</span><span>-0.8 dBTP</span></div>
-            <div><span>St. Width</span><span>118%</span></div>
-            <div><span>Target</span><span>-14 LUFS</span></div>
-          </div>
-        </div>
-
-        <div class="preset-card" data-preset="festival-edm">
-          <span class="check-icon">✓</span>
-          <div class="card-icon">🏛️</div>
-          <div class="preset-title">Festival EDM</div>
-          <div class="preset-desc">Ancho estéreo maximizado, graves de gran impacto e highend reluciente para la pista de baile.</div>
-          <div class="genre-tags"><span>EDM</span><span>House</span><span>Electro</span></div>
-          <div class="spec-grid">
-            <div><span>Compresor</span><span>3:1 • -10 dB</span></div>
-            <div><span>Ceiling</span><span>-0.3 dBTP</span></div>
-            <div><span>St. Width</span><span>162%</span></div>
-            <div><span>Target</span><span>-9 LUFS</span></div>
-          </div>
-        </div>
-
-        <div class="preset-card" data-preset="cinta-vintage">
-          <span class="check-icon">✓</span>
-          <div class="card-icon">📽️</div>
-          <div class="preset-title">Cinta Vintage</div>
-          <div class="preset-desc">Saturación armónica suave, calidez analógica y leve redondeo de agudos estilo cinta magnética.</div>
-          <div class="genre-tags"><span>Indie</span><span>Jazz</span><span>Rock</span></div>
-          <div class="spec-grid">
-            <div><span>Compresor</span><span>2.2:1 • -16 dB</span></div>
-            <div><span>Ceiling</span><span>-1.3 dBTP</span></div>
-            <div><span>St. Width</span><span>95%</span></div>
-            <div><span>Target</span><span>-16 LUFS</span></div>
-          </div>
-        </div>
-
-        <div class="preset-card" data-preset="analogico-calido">
-          <span class="check-icon">✓</span>
-          <div class="card-icon">🔥</div>
-          <div class="preset-title">Analógico Cálido</div>
-          <div class="preset-desc">Graves profundos combinados con agudos armónicos mejorados y dinámicas musicales estilo válvula.</div>
-          <div class="genre-tags"><span>Hip-Hop</span><span>Trap</span><span>R&B</span></div>
-          <div class="spec-grid">
-            <div><span>Compresor</span><span>3.5:1 • -12 dB</span></div>
-            <div><span>Ceiling</span><span>-0.5 dBTP</span></div>
-            <div><span>St. Width</span><span>110%</span></div>
-            <div><span>Target</span><span>-10 LUFS</span></div>
-          </div>
-        </div>
-
-      </div>
+    <div class="controls">
+      <button class="btn" id="playBtn" disabled>Reproducir</button>
+      <button class="btn" id="stopBtn" disabled>Detener</button>
     </div>
-  </main>
+
+    <div class="status" id="statusText">Esperando archivo...</div>
+  </div>
 
   <script>
-    // --- Presets de Audio ---
-    const MASTERING_PRESETS = {
-      "pulido-pop": {
-        name: "Pulido Pop",
-        targetLUFS: -14,
-        ceiling: -0.8,
-        compressor: { threshold: -14, ratio: 4.0, attack: 0.012, release: 0.12, knee: 5 },
-        eq: [
-          { type: "lowshelf", frequency: 80, gain: +2.0 },
-          { type: "peaking", frequency: 320, gain: -1.5, Q: 1.0 },
-          { type: "peaking", frequency: 3500, gain: +2.2, Q: 0.8 },
-          { type: "highshelf", frequency: 10000, gain: +3.0 }
-        ],
-        saturation: { amount: 8 }
-      },
-      "festival-edm": {
-        name: "Festival EDM",
-        targetLUFS: -9,
-        ceiling: -0.3,
-        compressor: { threshold: -10, ratio: 3.0, attack: 0.008, release: 0.08, knee: 3 },
-        eq: [
-          { type: "lowshelf", frequency: 60, gain: +3.5 },
-          { type: "peaking", frequency: 250, gain: -2.0, Q: 1.2 },
-          { type: "peaking", frequency: 5000, gain: +2.5, Q: 0.7 },
-          { type: "highshelf", frequency: 12000, gain: +4.0 }
-        ],
-        saturation: { amount: 15 }
-      },
-      "cinta-vintage": {
-        name: "Cinta Vintage",
-        targetLUFS: -16,
-        ceiling: -1.3,
-        compressor: { threshold: -16, ratio: 2.2, attack: 0.025, release: 0.25, knee: 12 },
-        eq: [
-          { type: "lowshelf", frequency: 100, gain: +2.8 },
-          { type: "peaking", frequency: 400, gain: +1.0, Q: 0.8 },
-          { type: "highshelf", frequency: 8500, gain: -1.2 }
-        ],
-        saturation: { amount: 35 }
-      },
-      "analogico-calido": {
-        name: "Analógico Cálido",
-        targetLUFS: -10,
-        ceiling: -0.5,
-        compressor: { threshold: -12, ratio: 3.5, attack: 0.015, release: 0.15, knee: 8 },
-        eq: [
-          { type: "lowshelf", frequency: 70, gain: +3.0 },
-          { type: "peaking", frequency: 1500, gain: +1.8, Q: 0.9 },
-          { type: "highshelf", frequency: 9000, gain: +2.0 }
-        ],
-        saturation: { amount: 22 }
-      }
-    };
-
-    // --- Estado de la App ---
-    let currentPresetKey = 'pulido-pop';
+    // 1. Inicialización perezosa del AudioContext
     let audioCtx = null;
-    let rawAudioBuffer = null;
-    let isPlaying = false;
     let currentSourceNode = null;
+    let loadedAudioBuffer = null;
 
-    // --- Curva de Saturación Waveshaper ---
-    function createSaturationCurve(amount = 0) {
-      const k = typeof amount === 'number' ? amount : 50;
-      const n_samples = 44100;
-      const curve = new Float32Array(n_samples);
-      const deg = Math.PI / 180;
-      for (let i = 0; i < n_samples; ++i) {
-        const x = (i * 2) / n_samples - 1;
-        curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x));
-      }
-      return curve;
-    }
+    // Elementos del DOM
+    const audioInput = document.getElementById('audioInput');
+    const selectBtn = document.getElementById('selectBtn');
+    const playBtn = document.getElementById('playBtn');
+    const stopBtn = document.getElementById('stopBtn');
+    const statusText = document.getElementById('statusText');
 
-    // --- Inicialización del AudioContext en primer click ---
-    function ensureAudioContext() {
+    function getAudioContext() {
       if (!audioCtx) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContextClass();
       }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      return audioCtx;
     }
 
-    // --- Carga de Archivos de Audio ---
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('audio-input');
+    // Modalidad de selección mediante botón genérico
+    selectBtn.addEventListener('click', () => audioInput.click());
 
-    dropZone.addEventListener('click', () => fileInput.click());
+    // 2. Manejo de selección de archivo
+    audioInput.addEventListener('change', async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
 
-    ['dragenter', 'dragover'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropZone.classList.add('dragover');
-      });
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-      dropZone.addEventListener(eventName, (e) => {
-        e.preventDefault();
-        dropZone.classList.remove('dragover');
-      });
-    });
-
-    dropZone.addEventListener('drop', (e) => {
-      const files = e.dataTransfer.files;
-      if (files.length > 0) handleFile(files[0]);
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleFile(e.target.files[0]);
-    });
-
-    async function handleFile(file) {
-      ensureAudioContext();
-      document.getElementById('file-name-display').textContent = file.name;
-      document.getElementById('status-text').textContent = 'Procesando archivo de audio...';
+      setStatus(`Cargando: ${file.name}...`);
+      disableControls();
 
       try {
-        const arrayBuffer = await file.arrayBuffer();
-        rawAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-        document.getElementById('status-text').textContent = `Audio cargado (${(file.size / (1024 * 1024)).toFixed(2)} MB) • Listo para reproducir`;
-        if (isPlaying) {
-          playAudio();
+        const ctx = getAudioContext();
+
+        // 3. Reanudar contexto si el navegador lo suspendió
+        if (ctx.state === 'suspended') {
+          await ctx.resume();
         }
+
+        // 4. Lectura de archivo mediante FileReader promisificado
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+
+        // 5. Decodificación segura y compatible
+        // Usamos .slice(0) para prevenir el desprendimiento (detached ArrayBuffer)
+        loadedAudioBuffer = await decodeAudioDataSafely(ctx, arrayBuffer.slice(0));
+
+        setStatus(`Listo: ${file.name} (${loadedAudioBuffer.duration.toFixed(1)}s)`);
+        playBtn.disabled = false;
+
       } catch (err) {
-        console.error(err);
-        document.getElementById('status-text').textContent = 'Error al decodificar el archivo de audio.';
+        console.error("Error procesando audio:", err);
+        setStatus(`Error: ${err.message || "No se pudo procesar el archivo"}`, true);
+        loadedAudioBuffer = null;
+      } finally {
+        // 6. Resetear el valor del input para permitir recargar el mismo archivo consecutivamente
+        audioInput.value = '';
       }
-    }
+    });
 
-    // --- Reproducción con Filtros DSP ---
-    function playAudio() {
-      if (!rawAudioBuffer) {
-        alert('Por favor carga un archivo de audio válido.');
-        return;
-      }
+    // 7. Reproducción de Audio
+    playBtn.addEventListener('click', async () => {
+      if (!loadedAudioBuffer) return;
 
-      ensureAudioContext();
+      const ctx = getAudioContext();
 
-      if (currentSourceNode) {
-        try { currentSourceNode.stop(); } catch(e){}
-        currentSourceNode.disconnect();
-      }
-
-      const preset = MASTERING_PRESETS[currentPresetKey];
-      currentSourceNode = audioCtx.createBufferSource();
-      currentSourceNode.buffer = rawAudioBuffer;
-
-      let lastNode = currentSourceNode;
-
-      // 1. Ecualizador
-      preset.eq.forEach(eq => {
-        const filter = audioCtx.createBiquadFilter();
-        filter.type = eq.type;
-        filter.frequency.value = eq.frequency;
-        filter.gain.value = eq.gain;
-        if (eq.Q) filter.Q.value = eq.Q;
-        lastNode.connect(filter);
-        lastNode = filter;
-      });
-
-      // 2. Saturación
-      if (preset.saturation && preset.saturation.amount > 0) {
-        const shaper = audioCtx.createWaveShaper();
-        shaper.curve = createSaturationCurve(preset.saturation.amount);
-        shaper.oversample = '4x';
-        lastNode.connect(shaper);
-        lastNode = shaper;
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
       }
 
-      // 3. Compresor
-      const comp = audioCtx.createDynamicsCompressor();
-      comp.threshold.value = preset.compressor.threshold;
-      comp.ratio.value = preset.compressor.ratio;
-      comp.attack.value = preset.compressor.attack;
-      comp.release.value = preset.compressor.release;
-      comp.knee.value = preset.compressor.knee;
-      lastNode.connect(comp);
-      lastNode = comp;
+      // Detener cualquier reproducción previa
+      stopCurrentAudio();
 
-      // Conexión a la salida de audio del sistema
-      lastNode.connect(audioCtx.destination);
-
-      currentSourceNode.start(0);
-      isPlaying = true;
-      document.getElementById('play-btn').textContent = '⏸ PAUSAR';
-      document.getElementById('status-text').textContent = `▶ Reproduciendo con preset: ${preset.name}`;
+      // Crear nuevo nodo fuente (los BufferSourceNodes son de único uso)
+      currentSourceNode = ctx.createBufferSource();
+      currentSourceNode.buffer = loadedAudioBuffer;
+      currentSourceNode.connect(ctx.destination);
 
       currentSourceNode.onended = () => {
-        isPlaying = false;
-        document.getElementById('play-btn').textContent = '▶ REPRODUCIR';
-        document.getElementById('status-text').textContent = 'Reproducción finalizada';
+        playBtn.disabled = false;
+        stopBtn.disabled = true;
       };
-    }
 
-    function stopAudio() {
-      if (currentSourceNode) {
-        try { currentSourceNode.stop(); } catch(e){}
-      }
-      isPlaying = false;
-      document.getElementById('play-btn').textContent = '▶ REPRODUCIR';
-      document.getElementById('status-text').textContent = 'Reproducción pausada';
-    }
-
-    document.getElementById('play-btn').addEventListener('click', () => {
-      if (isPlaying) {
-        stopAudio();
-      } else {
-        playAudio();
-      }
+      currentSourceNode.start(0);
+      playBtn.disabled = true;
+      stopBtn.disabled = false;
+      setStatus("Reproduciendo...");
     });
 
-    // --- Selector de Presets ---
-    const cards = document.querySelectorAll('.preset-card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        if (card.classList.contains('active')) return;
+    // 8. Detener reproducción
+    stopBtn.addEventListener('click', () => {
+      stopCurrentAudio();
+      setStatus("Reproducción detenida.");
+    });
 
-        cards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
+    function stopCurrentAudio() {
+      if (currentSourceNode) {
+        try {
+          currentSourceNode.stop();
+          currentSourceNode.disconnect();
+        } catch (e) {
+          // Ya estaba detenido
+        }
+        currentSourceNode = null;
+      }
+      playBtn.disabled = !loadedAudioBuffer;
+      stopBtn.disabled = true;
+    }
 
-        currentPresetKey = card.getAttribute('data-preset');
-        const config = MASTERING_PRESETS[currentPresetKey];
+    // --- FUNCIONES AUXILIARES ROBUSTAS ---
 
-        document.getElementById('status-text').textContent = `Preset seleccionado: ${config.name}`;
+    function readFileAsArrayBuffer(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = () => reject(new Error("Error de lectura del archivo local."));
+        reader.readAsArrayBuffer(file);
+      });
+    }
 
-        if (isPlaying) {
-          playAudio();
+    function decodeAudioDataSafely(ctx, arrayBuffer) {
+      return new Promise((resolve, reject) => {
+        // Fallback dual: Promesas + Callbacks (cubre Safari legacy y browsers modernos)
+        const res = ctx.decodeAudioData(
+          arrayBuffer,
+          (buffer) => resolve(buffer),
+          (err) => reject(new Error("Formato de audio no soportado o archivo corrupto."))
+        );
+
+        if (res && typeof res.then === 'function') {
+          res.then(resolve).catch((err) => reject(new Error("Error al decodificar audio.")));
         }
       });
-    });
+    }
+
+    function setStatus(message, isError = false) {
+      statusText.textContent = message;
+      statusText.classList.toggle('error', isError);
+    }
+
+    function disableControls() {
+      playBtn.disabled = true;
+      stopBtn.disabled = true;
+    }
   </script>
 </body>
 </html>
