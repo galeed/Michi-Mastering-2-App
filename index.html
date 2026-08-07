@@ -119,6 +119,88 @@
       color: var(--accent-cyan);
     }
 
+    /* Contenedor de Cargar Archivos */
+    .upload-panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 25px;
+    }
+
+    .audio-upload {
+      border: 2px dashed rgba(0, 242, 254, 0.3);
+      padding: 35px 20px;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .audio-upload:hover, .audio-upload.dragover {
+      border-color: var(--accent-cyan);
+      background: rgba(0, 242, 254, 0.05);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+    }
+
+    .upload-icon {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .upload-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    #audio-input {
+      display: none;
+    }
+
+    .controls-row {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .action-btn {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #000;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    }
+
+    .output-info {
+      font-size: 13px;
+      color: var(--accent-neon);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* Grid de Filtros de Mastering */
     .preset-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -228,62 +310,6 @@
       color: #fff;
       font-weight: 600;
     }
-
-    .control-panel {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      backdrop-filter: blur(12px);
-      border-radius: 12px;
-      padding: 25px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .audio-upload {
-      border: 2px dashed rgba(0, 242, 254, 0.3);
-      padding: 30px;
-      text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: border 0.2s ease;
-    }
-
-    .audio-upload:hover {
-      border-color: var(--accent-cyan);
-      background: rgba(0, 242, 254, 0.02);
-    }
-
-    .audio-upload input {
-      display: none;
-    }
-
-    .action-btn {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #000;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
-      border: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      align-self: flex-start;
-    }
-
-    .action-btn:hover {
-      opacity: 0.9;
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
-    }
-
-    .output-info {
-      font-size: 13px;
-      color: var(--accent-neon);
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
   </style>
 </head>
 <body>
@@ -298,15 +324,32 @@
     </div>
     <div class="status-badge">
       <div class="status-dot"></div>
-      <span>MOTOR DSP LISTO</span>
+      <span>MOTOR DSP READY</span>
     </div>
   </header>
 
   <main>
-    <div>
-      <div class="section-title">🎧 Estilo de Masterización AI</div>
+    <!-- 1. Cuadro de Cargar Archivos (PRIMERO) -->
+    <div class="upload-panel">
+      <div class="section-title">🎵 1. Cargar Pista de Audio</div>
       
-      <!-- Reconstrucción de Tarjetas de Filtros -->
+      <div class="audio-upload" id="drop-zone">
+        <div class="upload-icon">📁</div>
+        <div class="upload-text" id="file-name-display">Haz clic o arrastra tu archivo aquí</div>
+        <div class="upload-sub">Soporta WAV, MP3, FLAC y AAC</div>
+        <input type="file" id="audio-input" accept="audio/*">
+      </div>
+
+      <div class="controls-row">
+        <button class="action-btn" id="play-btn">▶ REPRODUCIR / PAUSAR</button>
+        <div class="output-info" id="status-text">Sin audio cargado • Preset: Pulido Pop</div>
+      </div>
+    </div>
+
+    <!-- 2. Filtros de Mastering (SEGUNDO) -->
+    <div>
+      <div class="section-title">🎧 2. Seleccionar Estilo de Masterización AI</div>
+      
       <div class="preset-grid">
         
         <div class="preset-card active" data-preset="pulido-pop">
@@ -367,31 +410,15 @@
 
       </div>
     </div>
-
-    <!-- Panel de control de audio -->
-    <div class="control-panel">
-      <div class="section-title">🎵 Procesamiento de Audio</div>
-      
-      <div class="audio-upload" onclick="document.getElementById('audio-input').click()">
-        <p>📁 Carga tu archivo de audio (WAV, MP3, FLAC)</p>
-        <input type="file" id="audio-input" accept="audio/*">
-      </div>
-
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
-        <button class="action-btn" id="play-btn">REPRODUCIR MASTER</button>
-        <div class="output-info" id="status-text">Preset activo: Pulido Pop</div>
-      </div>
-    </div>
   </main>
 
   <script>
-    // --- Configuración de Presets y Parametrización Web Audio API ---
+    // --- Presets de Audio ---
     const MASTERING_PRESETS = {
       "pulido-pop": {
         name: "Pulido Pop",
         targetLUFS: -14,
         ceiling: -0.8,
-        stereoWidth: 1.18,
         compressor: { threshold: -14, ratio: 4.0, attack: 0.012, release: 0.12, knee: 5 },
         eq: [
           { type: "lowshelf", frequency: 80, gain: +2.0 },
@@ -405,7 +432,6 @@
         name: "Festival EDM",
         targetLUFS: -9,
         ceiling: -0.3,
-        stereoWidth: 1.62,
         compressor: { threshold: -10, ratio: 3.0, attack: 0.008, release: 0.08, knee: 3 },
         eq: [
           { type: "lowshelf", frequency: 60, gain: +3.5 },
@@ -419,7 +445,6 @@
         name: "Cinta Vintage",
         targetLUFS: -16,
         ceiling: -1.3,
-        stereoWidth: 0.95,
         compressor: { threshold: -16, ratio: 2.2, attack: 0.025, release: 0.25, knee: 12 },
         eq: [
           { type: "lowshelf", frequency: 100, gain: +2.8 },
@@ -432,7 +457,6 @@
         name: "Analógico Cálido",
         targetLUFS: -10,
         ceiling: -0.5,
-        stereoWidth: 1.10,
         compressor: { threshold: -12, ratio: 3.5, attack: 0.015, release: 0.15, knee: 8 },
         eq: [
           { type: "lowshelf", frequency: 70, gain: +3.0 },
@@ -443,11 +467,12 @@
       }
     };
 
-    // --- Estado Global ---
+    // --- Estado de la App ---
     let currentPresetKey = 'pulido-pop';
     let audioCtx = null;
-    let audioBuffer = null;
-    let currentSource = null;
+    let rawAudioBuffer = null;
+    let isPlaying = false;
+    let currentSourceNode = null;
 
     // --- Curva de Saturación Waveshaper ---
     function createSaturationCurve(amount = 0) {
@@ -462,78 +487,96 @@
       return curve;
     }
 
-    // --- Interactividad UI Tarjetas ---
-    function initPresetSelector() {
-      const cards = document.querySelectorAll('.preset-card');
-      cards.forEach(card => {
-        card.addEventListener('click', () => {
-          if (card.classList.contains('active')) return;
-
-          cards.forEach(c => c.classList.remove('active'));
-          card.classList.add('active');
-
-          const presetKey = card.getAttribute('data-preset');
-          currentPresetKey = presetKey;
-          
-          const config = MASTERING_PRESETS[presetKey];
-          document.getElementById('status-text').textContent = `Preset activo: ${config.name} (${config.targetLUFS} LUFS)`;
-
-          if (currentSource) {
-            playMasteredAudio();
-          }
-        });
-      });
-    }
-
-    // --- Carga y Gestión de Archivos Audio ---
-    document.getElementById('audio-input').addEventListener('change', async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
+    // --- Inicialización del AudioContext en primer click ---
+    function ensureAudioContext() {
       if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
       }
-
-      document.getElementById('status-text').textContent = 'Cargando y decodificando audio...';
-      const arrayBuffer = await file.arrayBuffer();
-      audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-      document.getElementById('status-text').textContent = `Audio listo: ${file.name}`;
-    });
-
-    // --- Renderizado y Procesamiento de la Cadena Web Audio ---
-    function playMasteredAudio() {
-      if (!audioBuffer) {
-        alert('Por favor carga un archivo de audio primero.');
-        return;
-      }
-
       if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
+    }
 
-      if (currentSource) {
-        currentSource.stop();
+    // --- Carga de Archivos de Audio ---
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('audio-input');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+      });
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0) handleFile(files[0]);
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    async function handleFile(file) {
+      ensureAudioContext();
+      document.getElementById('file-name-display').textContent = file.name;
+      document.getElementById('status-text').textContent = 'Procesando archivo de audio...';
+
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        rawAudioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        document.getElementById('status-text').textContent = `Audio cargado (${(file.size / (1024 * 1024)).toFixed(2)} MB) • Listo para reproducir`;
+        if (isPlaying) {
+          playAudio();
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('status-text').textContent = 'Error al decodificar el archivo de audio.';
+      }
+    }
+
+    // --- Reproducción con Filtros DSP ---
+    function playAudio() {
+      if (!rawAudioBuffer) {
+        alert('Por favor carga un archivo de audio válido.');
+        return;
+      }
+
+      ensureAudioContext();
+
+      if (currentSourceNode) {
+        try { currentSourceNode.stop(); } catch(e){}
+        currentSourceNode.disconnect();
       }
 
       const preset = MASTERING_PRESETS[currentPresetKey];
-      currentSource = audioCtx.createBufferSource();
-      currentSource.buffer = audioBuffer;
+      currentSourceNode = audioCtx.createBufferSource();
+      currentSourceNode.buffer = rawAudioBuffer;
 
-      let lastNode = currentSource;
+      let lastNode = currentSourceNode;
 
-      // 1. Cadena de Ecualización
-      preset.eq.forEach(eqConfig => {
+      // 1. Ecualizador
+      preset.eq.forEach(eq => {
         const filter = audioCtx.createBiquadFilter();
-        filter.type = eqConfig.type;
-        filter.frequency.value = eqConfig.frequency;
-        filter.gain.value = eqConfig.gain;
-        if (eqConfig.Q) filter.Q.value = eqConfig.Q;
-
+        filter.type = eq.type;
+        filter.frequency.value = eq.frequency;
+        filter.gain.value = eq.gain;
+        if (eq.Q) filter.Q.value = eq.Q;
         lastNode.connect(filter);
         lastNode = filter;
       });
 
-      // 2. Saturación / Calidez Armónica
+      // 2. Saturación
       if (preset.saturation && preset.saturation.amount > 0) {
         const shaper = audioCtx.createWaveShaper();
         shaper.curve = createSaturationCurve(preset.saturation.amount);
@@ -552,19 +595,56 @@
       lastNode.connect(comp);
       lastNode = comp;
 
-      // Conexión a la salida
+      // Conexión a la salida de audio del sistema
       lastNode.connect(audioCtx.destination);
-      currentSource.start(0);
 
+      currentSourceNode.start(0);
+      isPlaying = true;
+      document.getElementById('play-btn').textContent = '⏸ PAUSAR';
       document.getElementById('status-text').textContent = `▶ Reproduciendo con preset: ${preset.name}`;
+
+      currentSourceNode.onended = () => {
+        isPlaying = false;
+        document.getElementById('play-btn').textContent = '▶ REPRODUCIR';
+        document.getElementById('status-text').textContent = 'Reproducción finalizada';
+      };
+    }
+
+    function stopAudio() {
+      if (currentSourceNode) {
+        try { currentSourceNode.stop(); } catch(e){}
+      }
+      isPlaying = false;
+      document.getElementById('play-btn').textContent = '▶ REPRODUCIR';
+      document.getElementById('status-text').textContent = 'Reproducción pausada';
     }
 
     document.getElementById('play-btn').addEventListener('click', () => {
-      playMasteredAudio();
+      if (isPlaying) {
+        stopAudio();
+      } else {
+        playAudio();
+      }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initPresetSelector();
+    // --- Selector de Presets ---
+    const cards = document.querySelectorAll('.preset-card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        if (card.classList.contains('active')) return;
+
+        cards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+
+        currentPresetKey = card.getAttribute('data-preset');
+        const config = MASTERING_PRESETS[currentPresetKey];
+
+        document.getElementById('status-text').textContent = `Preset seleccionado: ${config.name}`;
+
+        if (isPlaying) {
+          playAudio();
+        }
+      });
     });
   </script>
 </body>
