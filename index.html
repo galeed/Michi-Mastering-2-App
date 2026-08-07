@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Michi Mastering App</title>
-  <!-- Fuentes Orbitron y Rajdhani -->
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
   
   <style>
@@ -27,7 +26,7 @@
       background-color: var(--bg-dark);
       background-image: 
         radial-gradient(circle at 15% 20%, rgba(0, 243, 255, 0.05) 0%, transparent 40%),
-        radial-gradient(circle at 85% 80%, rgba(ff, 0, 85, 0.05) 0%, transparent 40%);
+        radial-gradient(circle at 85% 80%, rgba(255, 0, 85, 0.05) 0%, transparent 40%);
       color: var(--text-color);
       font-family: 'Rajdhani', sans-serif;
       min-height: 100vh;
@@ -37,10 +36,9 @@
       padding: 30px 15px;
     }
 
-    /* Encabezado y Marca */
     .header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .header h1 {
@@ -50,57 +48,145 @@
       color: var(--neon-cyan);
       text-shadow: 0 0 12px rgba(0, 243, 255, 0.6);
       letter-spacing: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
     }
 
     .header p {
       font-size: 1rem;
       color: #94a3b8;
       margin-top: 5px;
-      letter-spacing: 1px;
     }
 
-    /* Zona de Carga (Dropzone) */
+    /* Zona de Carga */
     .upload-box {
       width: 100%;
       max-width: 650px;
       background: var(--card-bg);
       border: 2px dashed var(--neon-cyan);
       border-radius: 16px;
-      padding: 35px 20px;
+      padding: 30px 20px;
       text-align: center;
       cursor: pointer;
       backdrop-filter: blur(12px);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0, 243, 255, 0.05);
       transition: all 0.3s ease;
-      margin-bottom: 35px;
+      margin-bottom: 25px;
     }
 
-    .upload-box:hover {
+    .upload-box:hover, .upload-box.dragover {
       border-color: var(--neon-pink);
       box-shadow: 0 0 25px rgba(255, 0, 85, 0.3), inset 0 0 20px rgba(255, 0, 85, 0.1);
       transform: translateY(-2px);
     }
 
     .upload-icon {
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       color: var(--neon-cyan);
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+      pointer-events: none;
     }
 
     .upload-text {
       font-family: 'Orbitron', sans-serif;
       font-size: 1rem;
       color: #fff;
+      pointer-events: none;
     }
 
     .upload-subtext {
       font-size: 0.85rem;
       color: #64748b;
-      margin-top: 6px;
+      margin-top: 5px;
+      pointer-events: none;
+    }
+
+    .file-input-hidden {
+      display: none;
+    }
+
+    /* Módulo de Reproductor de Audio */
+    .player-card {
+      width: 100%;
+      max-width: 650px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px 25px;
+      backdrop-filter: blur(12px);
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .player-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .play-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--neon-cyan), #0088ff);
+      border: none;
+      color: #000;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 22px rgba(0, 243, 255, 0.7);
+    }
+
+    .play-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .progress-container {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .progress-bar-wrapper {
+      position: relative;
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+      border-radius: 4px;
+      transition: width 0.1s linear;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      color: #94a3b8;
     }
 
     /* Grilla de Presets */
@@ -129,20 +215,7 @@
       padding: 20px;
       cursor: pointer;
       backdrop-filter: blur(10px);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .preset-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 4px;
-      height: 100%;
-      background: transparent;
-      transition: background 0.3s;
+      transition: all 0.3s ease;
     }
 
     .preset-card:hover {
@@ -153,10 +226,6 @@
     .preset-card.active {
       border-color: var(--neon-pink);
       box-shadow: 0 0 20px rgba(255, 0, 85, 0.35);
-    }
-
-    .preset-card.active::before {
-      background: var(--neon-pink);
     }
 
     .preset-card h3 {
@@ -172,36 +241,47 @@
       line-height: 1.3;
     }
 
-    /* Reproductor Status */
     .status-bar {
       margin-top: 25px;
       font-family: 'Orbitron', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: var(--neon-cyan);
-      height: 20px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado -->
   <div class="header">
     <h1>🐾 MICHI MASTERING</h1>
     <p>Processing Engine - Web Audio API</p>
   </div>
 
-  <!-- Zona de Arrastre y Selección de Archivo -->
+  <!-- Zona de Carga -->
   <div class="upload-box" id="dropzone">
     <div class="upload-icon">🎵</div>
     <div class="upload-text" id="fileName">Sueltar archivo WAV / MP3 aquí</div>
     <div class="upload-subtext">Haz clic para buscar en tu dispositivo</div>
-    <input type="file" id="audioInput" accept="audio/*" style="display: none;">
+    <input type="file" id="audioInput" class="file-input-hidden" accept="audio/*">
   </div>
 
-  <!-- Selector de Estilos de Mastering -->
+  <!-- Tarjeta de Control de Reproducción -->
+  <div class="player-card">
+    <div class="player-controls">
+      <button class="play-btn" id="playBtn" disabled>▶</button>
+      <div class="progress-container">
+        <div class="progress-bar-wrapper" id="progressWrapper">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <div class="time-display">
+          <span id="currentTime">00:00</span>
+          <span id="durationTime">00:00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="section-title">ESTILO DE MASTERIZACIÓN</div>
   <div class="preset-container">
-    
     <div class="preset-card active" data-preset="pop">
       <h3>Pulido Pop</h3>
       <p>Bajos contundentes y claridad acentuada en el rango medio.</p>
@@ -216,53 +296,36 @@
       <h3>Analógico Cálido</h3>
       <p>Bajos enérgicos combinados con agudos potenciados y saturación suave.</p>
     </div>
-
   </div>
 
   <div class="status-bar" id="statusText">Esperando archivo de audio...</div>
 
   <script>
-    // --- MOTOR DE AUDIO (WEB AUDIO API) ---
     let audioCtx;
     let audioBuffer = null;
     let currentSource = null;
 
-    // Nodos del Rack
+    // Control de tiempo y estado
+    let isPlaying = false;
+    let startTime = 0;
+    let pauseOffset = 0;
+    let animationFrameId = null;
+
     let lowShelf, midEq, highShelf, saturator, limiter;
     let activePreset = 'pop';
 
-    // Ajustes Tonalidades basados en los 3 Presets seleccionados
     const PRESETS = {
-      pop: {
-        lowGain: 3.5,     // Bajos contundentes
-        midGain: 2.0,     // Claridad en medios
-        highGain: 2.5,    // Agudos de presencia
-        drive: 0.1,       // Saturación mínima
-        thresh: -1.0
-      },
-      edm: {
-        lowGain: 5.5,     // Sub-bass y graves masivos
-        midGain: -1.5,    // Espacio en medios
-        highGain: 4.0,    // Brillantez de festival
-        drive: 0.2,       // Punch dinámico
-        thresh: -0.5
-      },
-      warm: {
-        lowGain: 4.0,     // Bajos enérgicos
-        midGain: 1.0,     // Calidez
-        highGain: 3.5,    // Agudos potenciados
-        drive: 0.45,      // Saturación analógica de tubo
-        thresh: -1.5
-      }
+      pop: { lowGain: 3.5, midGain: 2.0, highGain: 2.5, drive: 0.1, thresh: -1.0 },
+      edm: { lowGain: 5.5, midGain: -1.5, highGain: 4.0, drive: 0.2, thresh: -0.5 },
+      warm: { lowGain: 4.0, midGain: 1.0, highGain: 3.5, drive: 0.45, thresh: -1.5 }
     };
 
-    function initAudio() {
+    function initAudioEngine() {
       if (audioCtx) return;
 
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       audioCtx = new AudioContext();
 
-      // Ecualizador de 3 Bandas
       lowShelf = audioCtx.createBiquadFilter();
       lowShelf.type = 'lowshelf';
       lowShelf.frequency.value = 100;
@@ -276,11 +339,9 @@
       highShelf.type = 'highshelf';
       highShelf.frequency.value = 8000;
 
-      // Saturador
       saturator = audioCtx.createWaveShaper();
       saturator.oversample = '4x';
 
-      // Limitador / Peak Control
       limiter = audioCtx.createDynamicsCompressor();
       limiter.threshold.value = -1.0;
       limiter.knee.value = 0.0;
@@ -288,7 +349,6 @@
       limiter.attack.value = 0.003;
       limiter.release.value = 0.1;
 
-      // Conexión en Serie
       lowShelf.connect(midEq);
       midEq.connect(highShelf);
       highShelf.connect(saturator);
@@ -297,6 +357,7 @@
     }
 
     function setDistortion(amount) {
+      if (!saturator) return;
       if (amount === 0) {
         saturator.curve = null;
         return;
@@ -326,69 +387,179 @@
       setDistortion(cfg.drive);
     }
 
-    // --- INTERACCIÓN Y EVENTOS ---
+    // Elementos DOM
     const dropzone = document.getElementById('dropzone');
     const audioInput = document.getElementById('audioInput');
     const fileNameDisplay = document.getElementById('fileName');
     const statusText = document.getElementById('statusText');
     const cards = document.querySelectorAll('.preset-card');
+    const playBtn = document.getElementById('playBtn');
+    const progressWrapper = document.getElementById('progressWrapper');
+    const progressFill = document.getElementById('progressFill');
+    const currentTimeDisplay = document.getElementById('currentTime');
+    const durationTimeDisplay = document.getElementById('durationTime');
 
+    // Manejadores Carga Archivo
     dropzone.addEventListener('click', () => audioInput.click());
 
-    dropzone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = '#ff0055';
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
     });
 
-    dropzone.addEventListener('dragleave', () => {
-      dropzone.style.borderColor = '#00f3ff';
+    ['dragenter', 'dragover'].forEach(evt => {
+      dropzone.addEventListener(evt, () => dropzone.classList.add('dragover'), false);
+    });
+
+    ['dragleave', 'drop'].forEach(evt => {
+      dropzone.addEventListener(evt, () => dropzone.classList.remove('dragover'), false);
     });
 
     dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.style.borderColor = '#00f3ff';
-      if (e.dataTransfer.files.length) {
-        handleFile(e.dataTransfer.files[0]);
-      }
+      if (e.dataTransfer.files.length) processSelectedFile(e.dataTransfer.files[0]);
     });
 
     audioInput.addEventListener('change', (e) => {
-      if (e.target.files.length) {
-        handleFile(e.target.files[0]);
-      }
+      if (e.target.files.length) processSelectedFile(e.target.files[0]);
     });
 
-    function handleFile(file) {
-      initAudio();
+    function processSelectedFile(file) {
+      initAudioEngine();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
       fileNameDisplay.textContent = file.name;
-      statusText.textContent = "Cargando y procesando audio...";
+      statusText.textContent = "Decodificando archivo de audio...";
+
+      stopAudio();
+      pauseOffset = 0;
 
       const reader = new FileReader();
-      reader.onload = async (evt) => {
-        try {
-          audioBuffer = await audioCtx.decodeAudioData(evt.target.result);
-          statusText.textContent = "Reproduciendo con Preset: " + activePreset.toUpperCase();
-          startPlayback();
-        } catch (err) {
-          statusText.textContent = "Error al procesar el archivo de audio.";
-        }
+      reader.onload = function(evt) {
+        audioCtx.decodeAudioData(evt.target.result, function(decodedBuffer) {
+          audioBuffer = decodedBuffer;
+          durationTimeDisplay.textContent = formatTime(audioBuffer.duration);
+          playBtn.disabled = false;
+          statusText.textContent = "Audio listo. Preset: " + activePreset.toUpperCase();
+          startPlayback(0);
+        }, function(err) {
+          statusText.textContent = "Error al decodificar audio.";
+        });
       };
       reader.readAsArrayBuffer(file);
     }
 
-    function startPlayback() {
+    // Control de Reproducción Web Audio API
+    function startPlayback(offset) {
       if (!audioBuffer) return;
-      if (currentSource) currentSource.stop();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (currentSource) {
+        currentSource.stop();
+      }
 
       currentSource = audioCtx.createBufferSource();
       currentSource.buffer = audioBuffer;
       currentSource.connect(lowShelf);
-      
       applyPreset(activePreset);
-      currentSource.start(0);
+
+      startTime = audioCtx.currentTime - offset;
+      pauseOffset = offset;
+      currentSource.start(0, offset);
+
+      isPlaying = true;
+      playBtn.textContent = '❚❚';
+      statusText.textContent = "Reproduciendo preset: " + activePreset.toUpperCase();
+
+      currentSource.onended = () => {
+        if (getCurrentTime() >= audioBuffer.duration) {
+          stopAudio();
+          pauseOffset = 0;
+          updateProgressUI(0);
+        }
+      };
+
+      requestAnimationFrame(updateProgressBar);
     }
 
+    function pauseAudio() {
+      if (!isPlaying || !currentSource) return;
+      pauseOffset = getCurrentTime();
+      currentSource.stop();
+      isPlaying = false;
+      playBtn.textContent = '▶';
+      statusText.textContent = "Pausado";
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    }
+
+    function stopAudio() {
+      if (currentSource) {
+        currentSource.stop();
+        currentSource = null;
+      }
+      isPlaying = false;
+      playBtn.textContent = '▶';
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    }
+
+    function getCurrentTime() {
+      if (!isPlaying) return pauseOffset;
+      return audioCtx.currentTime - startTime;
+    }
+
+    function updateProgressBar() {
+      if (!isPlaying || !audioBuffer) return;
+
+      const current = getCurrentTime();
+      const duration = audioBuffer.duration;
+
+      if (current <= duration) {
+        updateProgressUI(current / duration);
+        currentTimeDisplay.textContent = formatTime(current);
+        animationFrameId = requestAnimationFrame(updateProgressBar);
+      }
+    }
+
+    function updateProgressUI(ratio) {
+      progressFill.style.width = (ratio * 100) + '%';
+      if (audioBuffer) {
+        currentTimeDisplay.textContent = formatTime(ratio * audioBuffer.duration);
+      }
+    }
+
+    // Formateador de tiempo mm:ss
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+    }
+
+    // Eventos Play / Pause Button
+    playBtn.addEventListener('click', () => {
+      if (!audioBuffer) return;
+      if (isPlaying) {
+        pauseAudio();
+      } else {
+        if (pauseOffset >= audioBuffer.duration) pauseOffset = 0;
+        startPlayback(pauseOffset);
+      }
+    });
+
+    // Evento de clic en la Barra de Progreso (Seeking / Saltos)
+    progressWrapper.addEventListener('click', (e) => {
+      if (!audioBuffer) return;
+      const rect = progressWrapper.getBoundingClientRect();
+      const clickPosition = (e.clientX - rect.left) / rect.width;
+      const newTime = clickPosition * audioBuffer.duration;
+
+      pauseOffset = newTime;
+      updateProgressUI(clickPosition);
+
+      if (isPlaying) {
+        startPlayback(newTime);
+      } else {
+        currentTimeDisplay.textContent = formatTime(newTime);
+      }
+    });
+
+    // Cambio de Preset en tiempo real
     cards.forEach(card => {
       card.addEventListener('click', () => {
         cards.forEach(c => c.classList.remove('active'));
@@ -397,7 +568,7 @@
         const selected = card.getAttribute('data-preset');
         applyPreset(selected);
         if (audioBuffer) {
-          statusText.textContent = "Preset activo: " + selected.toUpperCase();
+          statusText.textContent = (isPlaying ? "Reproduciendo" : "Pausado") + " - Preset: " + selected.toUpperCase();
         }
       });
     });
