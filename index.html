@@ -2,101 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Michi Mastering App</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- 1. AQUÍ VAN LOS ESTILOS (CSS) -->
   <style>
-    :root {
-      --bg-color: #08090c;
-      --card-bg: rgba(18, 22, 32, 0.65);
-      --neon-cyan: #00f3ff;
-      --neon-magenta: #ff0055;
-      --text-main: #e0e6ed;
-      --border-glass: rgba(0, 243, 255, 0.2);
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      font-family: 'Rajdhani', sans-serif;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      font-family: 'Orbitron', sans-serif;
-      color: var(--neon-cyan);
-      text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
-      margin-bottom: 20px;
-    }
-
-    /* Contenedor del Uploader */
-    .upload-zone {
-      width: 100%;
-      max-width: 600px;
-      padding: 30px;
-      border: 2px dashed var(--neon-cyan);
-      border-radius: 12px;
-      background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      text-align: center;
-      margin-bottom: 30px;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.1);
-    }
-
-    /* Grilla de Estilos de Mastering */
-    .preset-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 15px;
-      width: 100%;
-      max-width: 900px;
-    }
-
-    .preset-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-glass);
-      border-radius: 10px;
-      padding: 15px;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
-    }
-
-    .preset-card:hover, .preset-card.active {
-      border-color: var(--neon-magenta);
-      box-shadow: 0 0 15px rgba(ff, 0, 85, 0.4);
-      transform: translateY(-2px);
-    }
-
-    .preset-card h3 {
-      font-family: 'Orbitron', sans-serif;
-      margin: 0 0 8px 0;
-      color: var(--neon-cyan);
-      font-size: 1rem;
-    }
-
-    .preset-card p {
-      font-size: 0.85rem;
-      margin: 0;
-      opacity: 0.8;
-    }
+    /* Estilos Cyberpunk / Glassmorphic */
+    /* ... */
   </style>
 </head>
 <body>
 
   <h1>MICHI MASTERING</h1>
 
-  <!-- Dropzone para archivos -->
+  <!-- 2. AQUÍ VA LA ESTRUCTURA VISUAL (HTML) -->
   <div class="upload-zone" id="dropzone">
     <p>Arrastra tu archivo WAV/MP3 aquí o haz clic para cargar</p>
     <input type="file" id="audioInput" accept="audio/*" style="display:none;">
   </div>
 
-  <!-- Panel de Presets de Mastering -->
   <div class="preset-grid" id="presetGrid">
     <div class="preset-card active" data-preset="pop">
       <h3>Pulido Pop</h3>
@@ -116,21 +40,13 @@
     </div>
   </div>
 
+  <!-- 3. AQUÍ COLOCAS EL CÓDIGO JAVASCRIPT -->
   <script>
-    const dropzone = document.getElementById('dropzone');
-    const audioInput = document.getElementById('audioInput');
-    const cards = document.querySelectorAll('.preset-card');
-
-    dropzone.addEventListener('click', () => audioInput.click());
-
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        cards.forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-        const selectedPreset = card.getAttribute('data-preset');
-        console.log("Preset seleccionado:", selectedPreset);
-      });
-    });
+    // Coloca aquí todo el código del Web Audio API que te acabo de proporcionar
+    let audioCtx;
+    let audioBuffer = null;
+    // ...
   </script>
+
 </body>
 </html>
